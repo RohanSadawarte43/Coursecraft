@@ -11,6 +11,11 @@ alembic = "*"
 psycopg2 = "*"
 uvicorn = "*"
 python-dotenv = "*"
+torch = "*"
+peft = "*"
+bitsandbytes = "*"
+scipy = "*"
+accelerate = "*"
 
 [dev-packages]
 
