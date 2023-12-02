@@ -1,14 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from fastapi_sqlalchemy import DBSessionMiddleware, db
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.sql_app.schemas import Course as SchemaCourse
-from app.sql_app.schemas import Buzzword as SchemaBuzzword
-
-from app.sql_app.models import Course as ModelCourse
-from app.sql_app.models import Buzzword as ModelBuzzword
 
 import os
 from dotenv import load_dotenv
@@ -29,43 +23,64 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# to avoid csrftokenError
-app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
-
-@app.post('/course/', response_model=SchemaCourse)
-async def create_course(course: SchemaCourse):
-    db_course = ModelCourse(**course.dict())
-    db.session.add(db_course)
-    db.session.commit()
-    return db_course
-
-@app.get('/courses/')
-async def course():
-    course = db.session.query(ModelCourse).all()
-    return course
-
-@app.post('/buzzword/', response_model=SchemaBuzzword)
-async def create_buzzword(buzzword: SchemaBuzzword):
-    db_buzzword = ModelBuzzword(**buzzword.dict())
-    db.session.add(db_buzzword)
-    db.session.commit()
-    return db_buzzword
-
-@app.get('/buzzwords/')
-async def buzzword():
-    buzzwords = db.session.query(ModelBuzzword).all()
-    return buzzwords
-
-
 
 from pydantic import BaseModel
 class QuestionAnswerInput(BaseModel):
     prompt: str
 
-@app.post('/give-coursework/')
-async def create_buzzword(input_data: QuestionAnswerInput):
+
+@app.post("/test-api")
+def question_answering(input_data: QuestionAnswerInput):
     prompt = input_data.prompt
-    return prompt
+    return {"answer": prompt}
+
+
+
+
+
+# from fastapi_sqlalchemy import DBSessionMiddleware, db
+
+# from app.sql_app.schemas import Course as SchemaCourse
+# from app.sql_app.schemas import Buzzword as SchemaBuzzword
+
+# from app.sql_app.models import Course as ModelCourse
+# from app.sql_app.models import Buzzword as ModelBuzzword
+
+
+# to avoid csrftokenError
+# app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
+
+# @app.post('/course/', response_model=SchemaCourse)
+# async def create_course(course: SchemaCourse):
+#     db_course = ModelCourse(**course.dict())
+#     db.session.add(db_course)
+#     db.session.commit()
+#     return db_course
+
+# @app.get('/courses/')
+# async def course():
+    
+#     return {"course"}
+
+# @app.post('/buzzword/', response_model=SchemaBuzzword)
+# async def create_buzzword(buzzword: SchemaBuzzword):
+#     db_buzzword = ModelBuzzword(**buzzword.dict())
+#     db.session.add(db_buzzword)
+#     db.session.commit()
+#     return db_buzzword
+
+# @app.get('/buzzwords/')
+# async def buzzword():
+#     buzzwords = db.session.query(ModelBuzzword).all()
+#     return buzzwords
+
+
+
+
+# @app.post('/give-coursework/')
+# async def create_buzzword(input_data: QuestionAnswerInput):
+#     prompt = input_data.prompt
+#     return prompt
 
 # # from transformers import AutoModelForQuestionAnswering, AutoTokenizer
 
@@ -144,19 +159,19 @@ async def create_buzzword(input_data: QuestionAnswerInput):
 
 
 
-@app.post("/question-answering")
-def question_answering(input_data: QuestionAnswerInput):
-    prompt = input_data.prompt
+# @app.post("/question-answering")
+# def question_answering(input_data: QuestionAnswerInput):
+#     prompt = input_data.prompt
 
-    inputs = tokenizer(prompt, return_tensors="pt")
-    # start_logits, end_logits = model(**inputs).logits.split(1, dim=-1)
+#     inputs = tokenizer(prompt, return_tensors="pt")
+#     # start_logits, end_logits = model(**inputs).logits.split(1, dim=-1)
 
-    # start_index = start_logits.argmax().item()
-    # end_index = end_logits.argmax().item()
+#     # start_index = start_logits.argmax().item()
+#     # end_index = end_logits.argmax().item()
 
-    # answer = tokenizer.decode(inputs["input_ids"][0][start_index:end_index+1])
+#     # answer = tokenizer.decode(inputs["input_ids"][0][start_index:end_index+1])
 
-    return {"answer": inputs}
+#     return {"answer": inputs}
 
 
 # To run locally
